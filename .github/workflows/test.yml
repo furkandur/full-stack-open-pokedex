@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - if: ${{ env.CONDITION == 'true' }}
-        run: echo 'this step is executed'
+        run: echo 'this step is executed.'
 
       - if: ${{ env.CONDITION == 'false' }}
         run: echo 'this step will not be executed'
