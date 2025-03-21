@@ -1,0 +1,19 @@
+name: Testing stuff
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  CONDITION: ${{ contains(join(github.event.commits.*.message, ' '), '#skip') }}
+
+jobs:
+  a_test_job:
+    runs-on: ubuntu-20.04
+    steps:
+      - if: ${{ env.CONDITION == 'true' }}
+        run: echo 'this step is executed'
+
+      - if: ${{ env.CONDITION == 'false' }}
+        run: echo 'this step will not be executed'
