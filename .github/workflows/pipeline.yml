@@ -41,7 +41,7 @@ jobs:
   tag-release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && env.SKIP_CONDITION == 'false' }}
+    if: ${{ github.event_name == 'push' && github.env.SKIP_CONDITION == 'false' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -55,7 +55,7 @@ jobs:
   playwright-test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    if: ${{ env.SKIP_CONDITION == 'false' }}
+    if: ${{ github.env.SKIP_CONDITION == 'false' }}
     steps:
       - uses: actions/checkout@v4
 
