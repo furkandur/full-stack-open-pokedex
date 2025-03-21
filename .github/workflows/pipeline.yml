@@ -55,6 +55,7 @@ jobs:
   playwright-test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    if: ${{ env.SKIP_CONDITION == 'false' }}
     steps:
       - uses: actions/checkout@v4
 
