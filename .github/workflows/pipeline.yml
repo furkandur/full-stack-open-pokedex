@@ -41,12 +41,12 @@ jobs:
   tag-release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && github.env.SKIP_CONDITION == 'false' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Bump version and push tag
-        if: ${{ github.event_name == 'push' && env.SKIP_CONDITION == 'false' }}
         uses: anothrNick/github-tag-action@1.71.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
