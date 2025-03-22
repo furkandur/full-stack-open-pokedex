@@ -83,10 +83,9 @@ jobs:
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
 
       - name: Deployed successfully
-        uses: rjstone/discord-webhook-notify@v1.0.4
+        uses: sarisia/actions-status-discord@v1.15.3
         if: ${{ success() }}
         with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          severity: info
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
           description: A new version of Pokedex deployed!
-          details: "URL: https://full-stack-open-pokedex-zct8.onrender.com"
+          url: "https://full-stack-open-pokedex-zct8.onrender.com"
