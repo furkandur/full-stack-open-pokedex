@@ -61,15 +61,8 @@ jobs:
           path: playwright-report/
           retention-days: 30
 
-  deployment-trigger:
-    needs: [simple_deployment_pipeline, playwright-test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deployment triggered
-        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
-
   tag-release:
-    needs: [deployment-trigger]
+    needs: [simple_deployment_pipeline, playwright-test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -81,3 +74,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+
+  deployment-trigger:
+    needs: [tag-release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deployment triggered
+        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
