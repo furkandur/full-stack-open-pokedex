@@ -34,6 +34,13 @@ jobs:
       - name: Test
         run: npm run test
 
+      - name: Build failed
+        uses: sarisia/actions-status-discord@v1.15.3
+        if: ${{ !success() }}
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          description: Build failed!
+
   playwright-test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -44,6 +51,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -64,12 +72,12 @@ jobs:
   tag-release:
     needs: [simple_deployment_pipeline, playwright-test]
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Bump version and push tag
-        if: ${{ github.event_name == 'push' }}
         uses: anothrNick/github-tag-action@1.71.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -78,6 +86,15 @@ jobs:
   deployment-trigger:
     needs: [tag-release]
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
     steps:
       - name: Deployment triggered
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+
+      - name: Deployed successfully
+        uses: sarisia/actions-status-discord@v1.15.3
+        if: ${{ success() }}
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          description: A new version of Pokedex deployed!
+          url: "https://full-stack-open-pokedex-zct8.onrender.com"
