@@ -34,24 +34,6 @@ jobs:
       - name: Test
         run: npm run test
 
-      - name: Trigger deployment
-        if: ${{ github.event_name == 'push' && env.SKIP_CONDITION == 'false' }}
-        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
-
-  tag-release:
-    needs: [simple_deployment_pipeline]
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.71.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch
-
   playwright-test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -78,3 +60,24 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+  tag-release:
+    needs: [simple_deployment_pipeline, playwright-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Bump version and push tag
+        if: ${{ github.event_name == 'push' }}
+        uses: anothrNick/github-tag-action@1.71.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+
+  deployment-trigger:
+    needs: [tag-release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deployment triggered
+        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
