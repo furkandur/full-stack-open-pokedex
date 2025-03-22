@@ -60,8 +60,9 @@ jobs:
   deployment-trigger:
     needs: [simple_deployment_pipeline, playwright-test]
     runs-on: ubuntu-latest
-    name: Deployment triggered
-    run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+    steps:
+      - name: Deployment triggered
+        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
 
   tag-release:
     needs: [deployment-trigger]
