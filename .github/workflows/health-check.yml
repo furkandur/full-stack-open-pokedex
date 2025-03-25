@@ -1,0 +1,26 @@
+name: Health Check
+
+on: push
+
+jobs:
+  health_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: URL Health Check
+        id: health_check
+        uses: Jtalk/url-health-check-action@v4
+        with:
+          url: https://full-stack-open-pokedex-zct8.onrender.com/health
+          max-attempts: 3
+          retry-delay: 6s
+
+      - name: Log failure if health check fails
+        if: steps.health_check.outcome == 'failure'
+        run: echo "Health check failed $(date '+%d.%m.%Y %H:%M')" >> health_check.log
+
+      - name: Store health-check log
+        if: steps.health_check.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-check-log
+          path: health-check.log
