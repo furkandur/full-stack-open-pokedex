@@ -19,10 +19,13 @@ jobs:
     if: ${{ failure() }}
     steps:
       - name: Log failure if health check fails
-        run: echo "Health check failed $(date '+%d.%m.%Y %H:%M')" >> health_check.log
+        run: echo "Health check failed $(date '+%d.%m.%Y %H:%M')" >> logs/health_check.log
+
+      - name: List files for debugging
+        run: ls -la
 
       - name: Store health-check log
         uses: actions/upload-artifact@v4
         with:
           name: health-check-log
-          path: health-check.log
+          path: logs/health-check.log
