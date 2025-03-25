@@ -9,23 +9,6 @@ jobs:
       - name: URL Health Check
         uses: Jtalk/url-health-check-action@v4
         with:
-          url: https://full-stack-open-pokedex-zct8.onrender.com/not-healthy
+          url: https://full-stack-open-pokedex-zct8.onrender.com/health
           max-attempts: 3
           retry-delay: 6s
-
-  health_check_log:
-    runs-on: ubuntu-latest
-    needs: [health_check]
-    if: ${{ failure() }}
-    steps:
-      - name: List files for debugging
-        run: ls -la
-
-      - name: Log failure if health check fails
-        run: echo "Health check failed $(date '+%d.%m.%Y %H:%M')" >> logs/health_check.log
-
-      - name: Store health-check log
-        uses: actions/upload-artifact@v4
-        with:
-          name: health-check-log
-          path: logs/health-check.log
