@@ -15,7 +15,7 @@ jobs:
 
   health_check_log:
     runs-on: ubuntu-latest
-    needs: [health_check]
+    if: ${{ failure() }}
     steps:
       - name: Log failure if health check fails
         run: echo "Health check failed $(date '+%d.%m.%Y %H:%M')" >> health_check.log
